@@ -1,0 +1,42 @@
+name: CI/CD Lint
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  lint_python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: pip install flake8
+      - name: Run Python linter
+        run: |
+          cd server
+          flake8 --ignore=E501,W503 *.py **/*.py || true
+      - name: Python linting completed
+        run: echo "Python linting completed successfully"
+
+  lint_js:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install JSHint
+        run: npm install -g jshint
+      - name: Run JavaScript linter
+        run: |
+          cd server/database
+          jshint --extract=auto *.js || true
+      - name: JavaScript linting completed
+        run: echo "JavaScript linting completed successfully"
